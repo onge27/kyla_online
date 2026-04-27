@@ -1,0 +1,41 @@
+name: Online Example Grading System
+
+services:
+  php:
+    build: .
+    container_name: php_app
+    image: php:8.2-apache
+    ports:
+      - 8889:80
+    volumes:
+      - ./index:/var/www/html
+    depends_on:
+      - db
+  db:
+    image: mysql:8.0
+    container_name: mysql_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: exam_system
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3340:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    platform: linux/amd64
+    container_name: phpmyadmin_online_admin
+    restart: always
+    ports:
+      - "8891:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: root
+    depends_on:
+      - db
+volumes:
+  db_data:
